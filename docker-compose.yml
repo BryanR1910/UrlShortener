@@ -2,12 +2,8 @@ services:
   postgres:
     image: postgres:15
     container_name: url_postgres
-    environment:
-      POSTGRES_DB: url_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -18,10 +14,8 @@ services:
       - postgres
     ports:
       - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/url_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
