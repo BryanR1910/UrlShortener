@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the application code
 COPY . .
 
+# Ensure mvnw is executable (bit may be lost across OS boundaries)
+RUN chmod +x ./mvnw
+
 # Build the application (requires Maven or Gradle)
 RUN ./mvnw clean package -DskipsTests
 
