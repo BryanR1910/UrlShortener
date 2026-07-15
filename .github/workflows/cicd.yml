@@ -41,13 +41,18 @@ jobs:
         with:
           push: true
           tags: ghcr.io/bryanr1910/url-shortener:latest
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/UrlShortener
-            docker compose up -d --pull always
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Deploy to VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd ~/UrlShortener &&
+            docker compose up -d --pull always &&
             docker image prune -f
+          "
