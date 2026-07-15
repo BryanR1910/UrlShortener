@@ -41,5 +41,14 @@ jobs:
         with:
           push: true
           tags: ghcr.io/bryanr1910/url-shortener:latest
-
-
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_KEY }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT || '22' }}
+          script: |
+            cd ~/UrlShortener
+            docker compose up -d --pull always
+            docker image prune -f
