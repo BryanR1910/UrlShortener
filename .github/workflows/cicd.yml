@@ -44,10 +44,9 @@ jobs:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.PORT || '22' }}
           script: |
             cd ~/UrlShortener
             docker compose up -d --pull always
