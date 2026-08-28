@@ -1,7 +1,6 @@
 package com.bryan.UrlShortener.model;
 
 import jakarta.persistence.*;
-
 import java.time.Instant;
 
 @Entity
@@ -9,26 +8,29 @@ public class ShortUrl {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     String url;
+
     @Column(unique = true)
     String shortCode;
+
     Long accessCount;
     Instant createdAt;
     Instant updatedAt;
 
     @PrePersist
-    private void beforePersist(){
+    private void beforePersist() {
         Instant instantDate = Instant.now();
         setCreatedAt(instantDate);
     }
 
     @PreUpdate
-    private void beforeUpdate(){
+    private void beforeUpdate() {
         Instant instantDate = Instant.now();
         setUpdatedAt(instantDate);
     }
 
-    public ShortUrl(){}
+    public ShortUrl() {}
 
     public ShortUrl(String url, String shortCode, Long accessCount) {
         this.url = url;
@@ -44,7 +46,6 @@ public class ShortUrl {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 
     public Long getId() {
         return id;
@@ -93,6 +94,4 @@ public class ShortUrl {
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-
 }

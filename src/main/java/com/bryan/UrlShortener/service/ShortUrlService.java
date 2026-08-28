@@ -16,13 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
 public class ShortUrlService {
     private final ShortUrlRepository repo;
     private final int LIMIT_TRIES = 4;
-
 
     public ShortUrlService(ShortUrlRepository repo) {
         this.repo = repo;
@@ -33,16 +30,12 @@ public class ShortUrlService {
         ShortUrl save = null;
         for (int i = 0; i < LIMIT_TRIES; i++) {
             String shortCode = ShortCodeGenerator.generate();
-            ShortUrl newShortUrl = new ShortUrl(
-                    dto.url(),
-                    shortCode,
-                    0L
-            );
+            ShortUrl newShortUrl = new ShortUrl(dto.url(), shortCode, 0L);
             try {
                 save = repo.save(newShortUrl);
-                break;// si no se lanzo una excepcion rompemos bucle
+                break; // si no se lanzo una excepcion rompemos bucle
             } catch (DataIntegrityViolationException ex) {
-                //reintentamos
+                // reintentamos
             }
         }
 
@@ -50,26 +43,23 @@ public class ShortUrlService {
             throw new ShortCodeGenerationException(LIMIT_TRIES);
         }
 
-        return ShortUrlResponseDto.fromEntity(save) ;
-    };
+        return ShortUrlResponseDto.fromEntity(save);
+    }
+    ;
 
-    public ShortUrlResponseDto getShortUrlByShortCode(String shortCode){
-        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow( () ->
-                new ShortUrlNotFoundException(shortCode)
-        );
+    public ShortUrlResponseDto getShortUrlByShortCode(String shortCode) {
+        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow(() -> new ShortUrlNotFoundException(shortCode));
 
         return ShortUrlResponseDto.fromEntity(shortUrl);
     }
 
     public ShortUrlResponseDto updateUrlByShortCode(String shortCode, UpdateShortUrlDto dto) {
-        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow( () ->
-                new ShortUrlNotFoundException(shortCode)
-        );
+        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow(() -> new ShortUrlNotFoundException(shortCode));
 
         shortUrl.setUrl(dto.url());
         ShortUrl updatedShortUrl = repo.save(shortUrl);
 
-        return ShortUrlResponseDto.fromEntity(shortUrl);
+        return ShortUrlResponseDto.fromEntity(updatedShortUrl);
     }
 
     @Transactional
@@ -81,18 +71,15 @@ public class ShortUrlService {
         }
     }
 
-    public ShortUrlStatsDto getStatsByShortCode(String shortCode){
-        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow( () ->
-                new ShortUrlNotFoundException(shortCode)
-        );
+    public ShortUrlStatsDto getStatsByShortCode(String shortCode) {
+        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow(() -> new ShortUrlNotFoundException(shortCode));
 
         return ShortUrlStatsDto.fromEntity(shortUrl);
     }
 
     @Transactional
     public String getOriginalUrlAndIncrement(String shortCode) {
-        ShortUrl shortUrl = repo.findByShortCode(shortCode)
-                .orElseThrow(() -> new ShortUrlNotFoundException(shortCode));
+        ShortUrl shortUrl = repo.findByShortCode(shortCode).orElseThrow(() -> new ShortUrlNotFoundException(shortCode));
         repo.incrementAccessCount(shortCode);
         return shortUrl.getUrl();
     }
